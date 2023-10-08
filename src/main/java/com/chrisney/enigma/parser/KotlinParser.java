@@ -376,6 +376,24 @@ private void parseProperty(CodeBlock block) {
   block.isMutable = isMutable;
 }
 
+private boolean isBreakCharacter(String word) {
+  if (word.length() == 1) {
+    return TextUtils.inCharactersList(charBreaks, word.charAt(0));
+  }
+  return false;
+}
+
+private boolean isEmptyWord(CodeString word) {
+  return word == null || TextUtils.isEmpty(word.value.trim()); 
+}
+
+private CodeString getFirstNoneEmptyWord(ArrayList<CodeString> words) {
+  for (CodeString word : words) {
+    if (!isEmptyWord(word)) return word;
+  }
+  return null;
+}
+
 private void parseFunction(CodeBlock block) {
   String type = null;
   
@@ -447,6 +465,18 @@ private void parsePackageOrImportName(CodeBlock block) {
     }
   }
   block.name = sb.toString();
+}
+
+private void parseModifier(CodeBlock block, String word) {
+  if (sPublic.equals(word)) {
+    block.modifier = CodeBlock.Modifier.Public;
+  } else if (sPrivate.equals(word)) {
+    block.modifier = CodeBlock.Modifier.Private;
+  } else if (sProtected.equals(word)) {
+    block.modifier = CodeBlock.Modifier.Protected;
+  } else if (sInternal.equals(word)) {
+    block.modifier = CodeBlock.Modifier.Internal;
+  }
 }
 
 }
