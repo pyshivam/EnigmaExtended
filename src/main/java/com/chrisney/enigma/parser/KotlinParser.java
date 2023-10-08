@@ -352,18 +352,54 @@ private void parseClassName(CodeBlock block) {
   }
 }
 
-private void parseInterfaceName(CodeBlock block) {
-  // Similar to parseClassName
+private void parseProperty(CodeBlock block) {
+  String type = null;
+  String name = null;
+  boolean isMutable = false;
+  
+  for (CodeString word : block.words) {
+    if (isBreakCharacter(word.value)) break;
+    
+    if (word.isType) {
+      type = word.value;
+    } else if (name == null) {
+      name = word.value;
+    } else if (word.value.equals(sVal)) {
+      isMutable = false;
+    } else if (word.value.equals(sVar)) {
+      isMutable = true;
+    }
+  }
+  
+  block.name = name;
+  block.variableType = type;
+  block.isMutable = isMutable;
 }
 
 private void parseFunction(CodeBlock block) {
-  // Get function name, return type
-  // Similar to JavaParser
+  String type = null;
+  
+  for (CodeString word : block.words) {
+    if (isBreakCharacter(word.value)) break;
+    
+    if (word.isType && type == null) {
+      type = word.value;
+    } else if (!word.isInstruction) {
+      block.name = word.value;
+      block.returnType = type;
+      return;
+    }
+  }
 }
 
-private void parseProperty(CodeBlock block) {
-  // Get property name, type, visibility
-  // Check if val or var
+private void parseInterfaceName(CodeBlock block) {
+  for (CodeString word : block.words) {
+    if (isBreakCharacter(word.value)) break;
+    if (!word.isInstruction && !TextUtils.isEmpty(word.value.trim())) {
+      block.name = word.value;
+      return;
+    } 
+  }
 }
 
 private void parseInitBlock(CodeBlock block) {
